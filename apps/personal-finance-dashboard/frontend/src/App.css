@@ -1,0 +1,79 @@
+.app {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.summary-cards {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: #f0f0f0;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  flex: 1;
+  margin: 0 10px;
+}
+
+.transaction-form {
+  margin-bottom: 20px;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.transaction-form h2 {
+  margin-bottom: 10px;
+}
+
+.transaction-form input, .transaction-form select {
+  display: block;
+  margin: 10px 0;
+  padding: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.transaction-form button {
+  padding: 10px 20px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.transaction-list h2 {
+  margin-bottom: 10px;
+}
+
+.transaction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.transaction-item button {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.charts {
+  margin-top: 20px;
+}
+
+.chart-container {
+  margin: 20px 0;
+  display: inline-block;
+}
