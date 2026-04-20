@@ -1,57 +1,31 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
 import TransactionForm from './TransactionForm';
 import TransactionList from './TransactionList';
 import Charts from './Charts';
-import { Transaction, CreateTransactionBody } from './types';
+import { useTransactions } from './hooks/useTransactions';
 import './App.css';
 
 function App() {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchTransactions();
-  }, []);
-
-  const fetchTransactions = async () => {
-    try {
-      const response = await axios.get<Transaction[]>('http://localhost:3001/transactions');
-      setTransactions(response.data);
-    } catch (error) {
-      console.error('Error fetching transactions:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const addTransaction = async (transaction: CreateTransactionBody) => {
-    try {
-      const response = await axios.post<Transaction>('http://localhost:3001/transactions', transaction);
-      setTransactions(prev => [...prev, response.data]);
-    } catch (error) {
-      console.error('Error adding transaction:', error);
-    }
-  };
-
-  const deleteTransaction = async (id: number) => {
-    try {
-      await axios.delete(`http://localhost:3001/transactions/${id}`);
-      setTransactions(prev => prev.filter(t => t.id !== id));
-    } catch (error) {
-      console.error('Error deleting transaction:', error);
-    }
-  };
-
-  const totalIncome = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-  const totalExpenses = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
-  const netBalance = totalIncome - totalExpenses;
+  const { transactions, loading, error, clearError, addTransaction, deleteTransaction } = useTransactions();
 
   if (loading) return <div>Loading...</div>;
+
+  const totalIncome = transactions
+    .filter(t => t.type === 'income')
+    .reduce((sum, t) => sum + t.amount, 0);
+  const totalExpenses = transactions
+    .filter(t => t.type === 'expense')
+    .reduce((sum, t) => sum + t.amount, 0);
+  const netBalance = totalIncome - totalExpenses;
 
   return (
     <div className="app">
       <h1>Personal Finance Dashboard</h1>
+      {error && (
+        <div className="error-banner" role="alert">
+          {error}
+          <button onClick={clearError} aria-label="Dismiss error">✕</button>
+        </div>
+      )}
       <div className="summary-cards">
         <div className="card">
           <h3>Total Income</h3>

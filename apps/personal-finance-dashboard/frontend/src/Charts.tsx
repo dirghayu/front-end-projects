@@ -1,4 +1,5 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from 'recharts';
+import { useMemo } from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie } from 'recharts';
 import { Transaction } from './types';
 
 interface ChartsProps {
@@ -8,25 +9,28 @@ interface ChartsProps {
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7c7c'];
 
 function Charts({ transactions }: ChartsProps) {
-  const income = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-  const expenses = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+  const barData = useMemo(() => {
+    const income = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+    const expenses = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+    return [
+      { name: 'Income', amount: income },
+      { name: 'Expenses', amount: expenses },
+    ];
+  }, [transactions]);
 
-  const barData = [
-    { name: 'Income', amount: income },
-    { name: 'Expenses', amount: expenses },
-  ];
-
-  const expenseCategories = transactions
-    .filter(t => t.type === 'expense')
-    .reduce<Record<string, number>>((acc, t) => {
-      acc[t.category] = (acc[t.category] || 0) + t.amount;
-      return acc;
-    }, {});
-
-  const pieData = Object.entries(expenseCategories).map(([category, amount]) => ({
-    name: category,
-    value: amount,
-  }));
+  const pieData = useMemo(() => {
+    const byCategory = transactions
+      .filter(t => t.type === 'expense')
+      .reduce<Record<string, number>>((acc, t) => {
+        acc[t.category] = (acc[t.category] || 0) + t.amount;
+        return acc;
+      }, {});
+    return Object.entries(byCategory).map(([name, value], index) => ({
+      name,
+      value,
+      fill: COLORS[index % COLORS.length],
+    }));
+  }, [transactions]);
 
   return (
     <div className="charts">
@@ -51,13 +55,8 @@ function Charts({ transactions }: ChartsProps) {
               `${name ?? ''} ${((percent ?? 0) * 100).toFixed(0)}%`
             }
             outerRadius={80}
-            fill="#8884d8"
             dataKey="value"
-          >
-            {pieData.map((_entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
+          />
           <Tooltip />
         </PieChart>
       </div>
