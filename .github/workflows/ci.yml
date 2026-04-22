@@ -72,6 +72,6 @@ jobs:
 
       - name: Deploy to Firebase
         working-directory: apps/personal-finance-dashboard
-        run: firebase deploy --non-interactive
+        run: firebase deploy --non-interactive --force
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
