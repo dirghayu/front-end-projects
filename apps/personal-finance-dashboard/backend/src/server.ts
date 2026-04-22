@@ -1,11 +1,8 @@
-import { createApp } from './app';
-import { InMemoryRepository } from './InMemoryRepository';
+import { createApp } from './routes/app';
+import { InMemoryRepository } from './repository/InMemoryRepository';
 
 const port = process.env.PORT || 3001;
 
-// Local dev always uses in-memory store.
-// For Firestore locally, run: npx firebase emulators:start
-// and use the Functions emulator which uses FirestoreRepository via index.ts.
 const repo = new InMemoryRepository();
 const app = createApp(repo);
 

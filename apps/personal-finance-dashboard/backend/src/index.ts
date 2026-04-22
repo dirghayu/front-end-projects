@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
 import { onRequest } from 'firebase-functions/v2/https';
-import { createApp } from './app';
-import { FirestoreRepository } from './FirestoreRepository';
+import { createApp } from './routes/app';
+import { FirestoreRepository } from './repository/FirestoreRepository';
 
 admin.initializeApp();
 

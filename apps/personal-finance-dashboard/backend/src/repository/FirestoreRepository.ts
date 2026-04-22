@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin';
-import { TransactionRepository } from './repository';
-import { Transaction, CreateTransactionBody } from './types';
+import { TransactionRepository } from './TransactionRepository';
+import { Transaction, CreateTransactionBody } from '../types/Transaction';
 
 export class FirestoreRepository implements TransactionRepository {
   private col = admin.firestore().collection('transactions');

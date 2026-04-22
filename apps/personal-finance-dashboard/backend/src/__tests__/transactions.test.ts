@@ -1,6 +1,6 @@
 import request from 'supertest';
-import { createApp } from '../app';
-import { InMemoryRepository } from '../InMemoryRepository';
+import { createApp } from '../routes/app';
+import { InMemoryRepository } from '../repository/InMemoryRepository';
 
 // Fresh repository per test — same isolation as before, now via DI
 // (equivalent to Spring @BeforeEach creating a new service with a fresh mock repository)

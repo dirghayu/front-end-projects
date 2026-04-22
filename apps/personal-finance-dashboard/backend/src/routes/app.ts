@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
-import { TransactionRepository } from './repository';
-import { Transaction, CreateTransactionBody, ErrorResponse } from './types';
+import { TransactionRepository } from '../repository/TransactionRepository';
+import { Transaction, CreateTransactionBody, ErrorResponse } from '../types/Transaction';
 
 export function createApp(repo: TransactionRepository) {
   const app = express();

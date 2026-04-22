@@ -1,5 +1,5 @@
-import { TransactionRepository } from './repository';
-import { Transaction, CreateTransactionBody } from './types';
+import { TransactionRepository } from './TransactionRepository';
+import { Transaction, CreateTransactionBody } from '../types/Transaction';
 
 let idCounter = 4;
 
