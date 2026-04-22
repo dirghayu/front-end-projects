@@ -7,8 +7,8 @@ import { Transaction } from '../types';
 const onDelete = vi.fn();
 
 const TRANSACTIONS: Transaction[] = [
-  { id: 1, type: 'income', amount: 5000, category: 'Salary', date: '2024-01-01' },
-  { id: 2, type: 'expense', amount: 1200.5, category: 'Rent', date: '2024-01-02' },
+  { id: '1', type: 'income', amount: 5000, category: 'Salary', date: '2024-01-01' },
+  { id: '2', type: 'expense', amount: 1200.5, category: 'Rent', date: '2024-01-02' },
 ];
 
 beforeEach(() => {
@@ -43,7 +43,7 @@ describe('TransactionList', () => {
     await user.click(screen.getByRole('button', { name: /delete salary/i }));
 
     expect(onDelete).toHaveBeenCalledOnce();
-    expect(onDelete).toHaveBeenCalledWith(1);
+    expect(onDelete).toHaveBeenCalledWith('1');
   });
 
   it('does not render the empty state when transactions exist', () => {

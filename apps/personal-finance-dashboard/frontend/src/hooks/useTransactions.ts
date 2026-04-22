@@ -9,7 +9,7 @@ interface UseTransactionsResult {
   error: string | null;
   clearError: () => void;
   addTransaction: (body: CreateTransactionBody) => Promise<void>;
-  deleteTransaction: (id: number) => Promise<void>;
+  deleteTransaction: (id: string) => Promise<void>;
 }
 
 export function useTransactions(): UseTransactionsResult {
@@ -45,7 +45,7 @@ export function useTransactions(): UseTransactionsResult {
     }
   }, []);
 
-  const deleteTransaction = useCallback(async (id: number) => {
+  const deleteTransaction = useCallback(async (id: string) => {
     try {
       await api.remove(id);
       setTransactions(prev => prev.filter(t => t.id !== id));

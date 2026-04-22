@@ -10,7 +10,11 @@ export interface Transaction {
 
 export interface CreateTransactionBody {
   type: TransactionType;
-  amount: string;
+  amount: number | string;
   category: string;
   date: string;
+}
+
+export interface ErrorResponse {
+  error: string;
 }

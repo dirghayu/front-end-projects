@@ -13,6 +13,6 @@ export async function create(body: CreateTransactionBody): Promise<Transaction> 
   return res.data;
 }
 
-export async function remove(id: number): Promise<void> {
+export async function remove(id: string): Promise<void> {
   await axios.delete(`${BASE}/${id}`);
 }

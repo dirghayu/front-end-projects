@@ -2,7 +2,7 @@ import { Transaction } from './types';
 
 interface TransactionListProps {
   transactions: Transaction[];
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
 }
 
 function TransactionList({ transactions, onDelete }: TransactionListProps) {

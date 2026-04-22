@@ -7,8 +7,8 @@ import { Transaction } from '../types';
 vi.mock('../api/transactions');
 
 const SEED: Transaction[] = [
-  { id: 1, type: 'income', amount: 5000, category: 'Salary', date: '2024-01-01' },
-  { id: 2, type: 'expense', amount: 1000, category: 'Rent', date: '2024-01-02' },
+  { id: '1', type: 'income', amount: 5000, category: 'Salary', date: '2024-01-01' },
+  { id: '2', type: 'expense', amount: 1000, category: 'Rent', date: '2024-01-02' },
 ];
 
 beforeEach(() => {
@@ -42,7 +42,7 @@ describe('useTransactions', () => {
   });
 
   it('adds a new transaction', async () => {
-    const newTx: Transaction = { id: 3, type: 'income', amount: 200, category: 'Freelance', date: '2024-02-01' };
+    const newTx: Transaction = { id: '3', type: 'income', amount: 200, category: 'Freelance', date: '2024-02-01' };
     vi.mocked(api.create).mockResolvedValue(newTx);
 
     const { result } = renderHook(() => useTransactions());
@@ -76,11 +76,11 @@ describe('useTransactions', () => {
     await waitFor(() => expect(result.current.loading).toBe(false));
 
     await act(async () => {
-      await result.current.deleteTransaction(1);
+      await result.current.deleteTransaction('1');
     });
 
     expect(result.current.transactions).toHaveLength(1);
-    expect(result.current.transactions[0].id).toBe(2);
+    expect(result.current.transactions[0].id).toBe('2');
   });
 
   it('sets error when deleteTransaction fails', async () => {
@@ -90,7 +90,7 @@ describe('useTransactions', () => {
     await waitFor(() => expect(result.current.loading).toBe(false));
 
     await act(async () => {
-      await result.current.deleteTransaction(1);
+      await result.current.deleteTransaction('1');
     });
 
     expect(result.current.error).toMatch(/failed to delete/i);

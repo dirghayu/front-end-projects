@@ -96,6 +96,18 @@ npm run test:coverage
 npm run typecheck    # tsc --noEmit
 ```
 
+## Firebase CLI (Windows)
+`firebase` is not added to PATH after `npm install -g firebase-tools` on Windows.
+Always use `npx` prefix:
+
+```powershell
+npx firebase login
+npx firebase projects:list
+npx firebase init
+npx firebase deploy
+npx firebase emulators:start
+```
+
 ## Notes
 - Backend runs on port 3001
 - Frontend Vite proxy forwards `/transactions` → `localhost:3001` (no hardcoded URLs in source)
