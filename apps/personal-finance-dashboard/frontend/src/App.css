@@ -52,6 +52,11 @@
   margin-bottom: 10px;
 }
 
+.transaction-form .react-datepicker-wrapper {
+  display: block;
+  width: 100%;
+}
+
 .transaction-form input, .transaction-form select {
   display: block;
   margin: 10px 0;

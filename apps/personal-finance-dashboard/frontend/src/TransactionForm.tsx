@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { CreateTransactionBody } from './types';
 
 interface TransactionFormProps {
@@ -7,11 +9,31 @@ interface TransactionFormProps {
 
 const INITIAL: CreateTransactionBody = { type: 'income', amount: '', category: '', date: '' };
 
+function sixMonthsAgo(): Date {
+  const d = new Date();
+  d.setMonth(d.getMonth() - 6);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function toDateString(date: Date): string {
+  return date.toISOString().split('T')[0];
+}
+
 function TransactionForm({ onAdd }: TransactionFormProps) {
   const [form, setForm] = useState<CreateTransactionBody>(INITIAL);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+  const minDate = sixMonthsAgo();
+  const maxDate = new Date();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleDateChange = (date: Date | null) => {
+    setSelectedDate(date);
+    setForm(prev => ({ ...prev, date: date ? toDateString(date) : '' }));
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -19,6 +41,7 @@ function TransactionForm({ onAdd }: TransactionFormProps) {
     if (!form.amount || !form.category || !form.date) return;
     onAdd(form);
     setForm(INITIAL);
+    setSelectedDate(null);
   };
 
   return (
@@ -56,14 +79,14 @@ function TransactionForm({ onAdd }: TransactionFormProps) {
       />
 
       <label htmlFor="date">Date</label>
-      <input
+      <DatePicker
         id="date"
-        type="text"
-        name="date"
-        placeholder="YYYY-MM-DD"
-        pattern="\d{4}-\d{2}-\d{2}"
-        value={form.date}
-        onChange={handleChange}
+        selected={selectedDate}
+        onChange={handleDateChange}
+        minDate={minDate}
+        maxDate={maxDate}
+        dateFormat="yyyy-MM-dd"
+        placeholderText="Select a date"
         required
       />
 
