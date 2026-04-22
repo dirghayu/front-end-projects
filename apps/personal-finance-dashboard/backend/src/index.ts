@@ -8,4 +8,4 @@ admin.initializeApp();
 const repo = new FirestoreRepository();
 const app = createApp(repo);
 
-export const api = onRequest({ region: 'australia-southeast1' }, app);
+export const api = onRequest({ region: 'australia-southeast1', invoker: 'public' }, app);
