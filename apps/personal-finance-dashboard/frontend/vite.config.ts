@@ -8,4 +8,15 @@ export default defineConfig({
       '/transactions': 'http://localhost:3001',
     },
   },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./src/__tests__/setup.ts'],
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['src/main.tsx', 'src/vite-env.d.ts'],
+      thresholds: { lines: 80, functions: 80, branches: 80 },
+    },
+  },
 });

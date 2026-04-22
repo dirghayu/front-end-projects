@@ -58,8 +58,10 @@ function TransactionForm({ onAdd }: TransactionFormProps) {
       <label htmlFor="date">Date</label>
       <input
         id="date"
-        type="date"
+        type="text"
         name="date"
+        placeholder="YYYY-MM-DD"
+        pattern="\d{4}-\d{2}-\d{2}"
         value={form.date}
         onChange={handleChange}
         required
