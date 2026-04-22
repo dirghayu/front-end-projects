@@ -75,3 +75,9 @@ jobs:
         run: firebase deploy --non-interactive --force
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
+      - name: Smoke test — /transactions returns JSON array
+        run: |
+          RESPONSE=$(curl -sf https://finance-dashboard-e51e4.web.app/transactions)
+          echo "$RESPONSE"
+          echo "$RESPONSE" | python3 -c "import sys, json; data = json.load(sys.stdin); assert isinstance(data, list), 'Expected JSON array'"
