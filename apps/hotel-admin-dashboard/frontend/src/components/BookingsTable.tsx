@@ -1,4 +1,5 @@
 import type { Booking, BookingStatus } from '../types';
+import type { SortKey, SortDir } from '../hooks/useTableControls';
 
 const STATUS_COLORS: Record<BookingStatus, string> = {
   'confirmed':   'status--confirmed',
@@ -12,11 +13,18 @@ const STATUSES: BookingStatus[] = ['confirmed', 'pending', 'cancelled', 'checked
 
 interface BookingsTableProps {
   bookings: Booking[];
+  sortKey: SortKey;
+  sortDir: SortDir;
+  onSort: (key: SortKey) => void;
   onStatusChange: (id: string, status: BookingStatus) => void;
   onDelete: (id: string) => void;
 }
 
-function BookingsTable({ bookings, onStatusChange, onDelete }: BookingsTableProps) {
+function SortIcon({ active, dir }: { active: boolean; dir: SortDir }) {
+  return <span className="sort-icon">{active ? (dir === 'asc' ? ' ↑' : ' ↓') : ' ↕'}</span>;
+}
+
+function BookingsTable({ bookings, sortKey, sortDir, onSort, onStatusChange, onDelete }: BookingsTableProps) {
   if (bookings.length === 0) {
     return <p className="empty-state">No bookings found.</p>;
   }
@@ -26,11 +34,17 @@ function BookingsTable({ bookings, onStatusChange, onDelete }: BookingsTableProp
       <table className="bookings-table">
         <thead>
           <tr>
-            <th>Guest</th>
+            <th className="sortable" onClick={() => onSort('guestName')}>
+              Guest <SortIcon active={sortKey === 'guestName'} dir={sortDir} />
+            </th>
             <th>Room</th>
-            <th>Check In</th>
+            <th className="sortable" onClick={() => onSort('checkIn')}>
+              Check In <SortIcon active={sortKey === 'checkIn'} dir={sortDir} />
+            </th>
             <th>Check Out</th>
-            <th>Amount</th>
+            <th className="sortable" onClick={() => onSort('amount')}>
+              Amount <SortIcon active={sortKey === 'amount'} dir={sortDir} />
+            </th>
             <th>Status</th>
             <th>Actions</th>
           </tr>

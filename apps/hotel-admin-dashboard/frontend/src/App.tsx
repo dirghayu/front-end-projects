@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useBookings } from './hooks/useBookings';
+import { useTableControls } from './hooks/useTableControls';
 import StatsBar from './components/StatsBar';
 import BookingsTable from './components/BookingsTable';
 import AddBookingModal from './components/AddBookingModal';
@@ -8,6 +9,20 @@ import './App.css';
 function App() {
   const { bookings, loading, error, clearError, addBooking, changeStatus, deleteBooking } = useBookings();
   const [showModal, setShowModal] = useState(false);
+
+  const {
+    search, handleSearch,
+    sortKey, sortDir, handleSort,
+    page, totalPages, setPage,
+    filtered, paginated,
+  } = useTableControls(bookings);
+
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => handleSearch(val), 250);
+  }, [handleSearch]);
 
   const handleAdd = async (body: Parameters<typeof addBooking>[0]) => {
     await addBooking(body);
@@ -39,15 +54,50 @@ function App() {
         ) : (
           <>
             <StatsBar bookings={bookings} />
-            <div className="section-header">
-              <h2>All Bookings</h2>
-              <span className="booking-count">{bookings.length} total</span>
+
+            <div className="table-controls">
+              <div className="section-header">
+                <h2>All Bookings</h2>
+                <span className="booking-count">{filtered.length} of {bookings.length}</span>
+              </div>
+              <input
+                className="search-input"
+                type="search"
+                placeholder="Search by guest or room..."
+                defaultValue={search}
+                onChange={onSearchChange}
+                aria-label="Search bookings"
+              />
             </div>
+
             <BookingsTable
-              bookings={bookings}
+              bookings={paginated}
+              sortKey={sortKey}
+              sortDir={sortDir}
+              onSort={handleSort}
               onStatusChange={changeStatus}
               onDelete={deleteBooking}
             />
+
+            {totalPages > 1 && (
+              <div className="pagination">
+                <button
+                  className="page-btn"
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                >
+                  ← Prev
+                </button>
+                <span className="page-info">Page {page} of {totalPages}</span>
+                <button
+                  className="page-btn"
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                >
+                  Next →
+                </button>
+              </div>
+            )}
           </>
         )}
       </main>
