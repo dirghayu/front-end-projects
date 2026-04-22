@@ -3,14 +3,17 @@ import TransactionForm from './TransactionForm';
 import TransactionList from './TransactionList';
 import Charts from './Charts';
 import { useTransactions } from './hooks/useTransactions';
+import { TransactionType } from './types';
 import './App.css';
 
 type Tab = 'overview' | 'history' | 'charts';
+type Filter = 'all' | TransactionType;
 
 function App() {
   const { transactions, loading, error, clearError, addTransaction, deleteTransaction } = useTransactions();
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [showModal, setShowModal] = useState(false);
+  const [filter, setFilter] = useState<Filter>('all');
 
   const totalIncome = transactions
     .filter(t => t.type === 'income')
@@ -75,7 +78,23 @@ function App() {
             </div>
           </div>
         ) : activeTab === 'history' ? (
-          <TransactionList transactions={transactions} onDelete={deleteTransaction} />
+          <>
+            <div className="filter-pills">
+              {(['all', 'income', 'expense'] as Filter[]).map(f => (
+                <button
+                  key={f}
+                  className={`filter-pill${filter === f ? ' filter-pill--active' : ''}`}
+                  onClick={() => setFilter(f)}
+                >
+                  {f.charAt(0).toUpperCase() + f.slice(1)}
+                </button>
+              ))}
+            </div>
+            <TransactionList
+              transactions={filter === 'all' ? transactions : transactions.filter(t => t.type === filter)}
+              onDelete={deleteTransaction}
+            />
+          </>
         ) : (
           <Charts transactions={transactions} />
         )}
