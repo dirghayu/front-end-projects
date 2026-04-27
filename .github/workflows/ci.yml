@@ -115,3 +115,31 @@ jobs:
           RESPONSE=$(curl -sf https://finance-dashboard-e51e4.web.app/transactions)
           echo "$RESPONSE"
           echo "$RESPONSE" | python3 -c "import sys, json; data = json.load(sys.stdin); assert isinstance(data, list), 'Expected JSON array'"
+
+      - name: Install hotel backend dependencies
+        working-directory: apps/hotel-admin-dashboard/backend
+        run: npm ci
+
+      - name: Build hotel backend
+        working-directory: apps/hotel-admin-dashboard/backend
+        run: npm run build
+
+      - name: Install hotel frontend dependencies
+        working-directory: apps/hotel-admin-dashboard/frontend
+        run: npm ci
+
+      - name: Build hotel frontend
+        working-directory: apps/hotel-admin-dashboard/frontend
+        run: npm run build
+
+      - name: Deploy hotel app to Firebase
+        working-directory: apps/hotel-admin-dashboard
+        run: firebase deploy --non-interactive --force
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
+      - name: Smoke test — /bookings returns JSON array
+        run: |
+          RESPONSE=$(curl -sf https://hotel-admin-a5563.web.app/bookings)
+          echo "$RESPONSE"
+          echo "$RESPONSE" | python3 -c "import sys, json; data = json.load(sys.stdin); assert isinstance(data, list), 'Expected JSON array'"
