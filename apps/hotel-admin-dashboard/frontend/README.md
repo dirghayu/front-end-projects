@@ -1,73 +1,90 @@
-# React + TypeScript + Vite
+# Hotel Admin Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![CI / Deploy](https://github.com/dirghayu/front-end-projects/actions/workflows/ci.yml/badge.svg)](https://github.com/dirghayu/front-end-projects/actions/workflows/ci.yml)
 
-Currently, two official plugins are available:
+A full-stack hotel admin dashboard for managing bookings — search, sort, paginate, and update booking status.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**Live:** https://hotel-admin-a5563.web.app
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Stack
 
-## Expanding the ESLint configuration
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 19, TypeScript, Vite |
+| Backend | Node.js, Express 5, TypeScript |
+| Database | In-memory (seeded on cold start) |
+| Hosting | Firebase Hosting + Cloud Functions v2 (2nd gen) |
+| Testing | Jest + Supertest (backend), Vitest + React Testing Library (frontend) |
+| CI/CD | GitHub Actions — typecheck + test + deploy on every push to `master` |
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Architecture
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+apps/hotel-admin-dashboard/
+├── backend/
+│   ├── src/
+│   │   ├── routes/app.ts           # Express routes (dependency-injected)
+│   │   ├── repository/
+│   │   │   ├── BookingRepository.ts    # Interface
+│   │   │   └── InMemoryRepository.ts  # Implementation (seeded)
+│   │   ├── types/Booking.ts        # Domain types
+│   │   ├── index.ts                # Firebase Functions entry point
+│   │   └── server.ts               # Local dev entry point
+│   └── src/__tests__/
+│       └── bookings.test.ts
+└── frontend/
+    ├── src/
+    │   ├── api/bookings.ts         # HTTP layer (axios)
+    │   ├── hooks/useTableControls.ts  # Search, sort, pagination state
+    │   ├── components/
+    │   │   ├── BookingsTable.tsx   # Sortable, paginated table
+    │   │   ├── StatsBar.tsx        # Occupancy, revenue, status counts
+    │   │   └── AddBookingModal.tsx
+    │   └── types.ts
+    └── src/__tests__/
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Key design decisions
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+**Repository pattern** — `BookingRepository` interface with `InMemoryRepository` implementation. Tests inject the in-memory repo directly — no mocking required. Same pattern as the finance dashboard and mirrors Spring `@Repository`.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+**Split entry points** — `server.ts` for local dev, `index.ts` wraps the Express app in a Firebase Cloud Function via `onRequest`. App logic is unaware of either context.
+
+**Frontend hook separation** — `useTableControls` owns all search/sort/pagination state as pure derived computation (`useMemo`). Components are stateless view layers.
+
+---
+
+## Running locally
+
+### Backend
+```bash
+cd apps/hotel-admin-dashboard/backend
+npm install
+npm run dev        # Express on port 3002, seeded in-memory store
+npm test           # Jest + Supertest
 ```
+
+### Frontend
+```bash
+cd apps/hotel-admin-dashboard/frontend
+npm install
+npm run dev        # Vite on port 5173, proxies /bookings → localhost:3002
+npm test           # Vitest + RTL
+```
+
+---
+
+## CI/CD
+
+Every push to `master`:
+1. Hotel backend tests (Jest)
+2. Hotel frontend typecheck + tests (Vitest)
+3. Build backend (tsc) + frontend (vite build)
+4. Deploy to Firebase Hosting + Cloud Functions v2
+5. Smoke test — assert `/bookings` returns a JSON array
+
+Deploy only runs if all tests pass (across both apps in the monorepo).
