@@ -1,115 +1,107 @@
-# Personal Finance Dashboard - Resly Learning Project
+# Full Stack Portfolio — Monorepo
 
 ## Project Overview
-Building a full-stack personal finance dashboard to demonstrate senior-level skills for Resly's Full Stack Developer position. Incorporating all required technologies: TypeScript, CI/CD, automated testing, AI-assisted development, GCP/Firebase deployment, and modern engineering practices.
+Building a full-stack portfolio to demonstrate senior-level skills. Two apps in one monorepo: a personal finance dashboard and a hotel admin dashboard. Incorporating: TypeScript, CI/CD, automated testing, AI-assisted development, GCP/Firebase deployment, and modern engineering practices.
+
+## Apps
+
+| App | Live URL | Frontend | Backend |
+|-----|----------|----------|---------|
+| Personal Finance Dashboard | https://finance-dashboard-e51e4.web.app | React 19 + Vite | Express 5 + Firestore |
+| Hotel Admin Dashboard | https://hotel-admin-a5563.web.app | React 19 + Vite | Express 5 + In-memory |
 
 ## Current Status
 
 ### ✅ Completed
-- **Backend (Express.js + TypeScript)**: REST API with GET/POST/DELETE endpoints, fully typed with interfaces, split into `app.ts` (testable) and `server.ts` (entry point)
-- **Frontend (React 19 + Vite + TypeScript)**: All components in `.tsx`, typed props/state, layered architecture:
-  - `src/api/transactions.ts` — HTTP calls (repository layer)
-  - `src/hooks/useTransactions.ts` — state + orchestration (service layer)
-  - `src/components` — pure view components
-- **Shared Types**: `Transaction`, `CreateTransactionBody`, `TransactionType`
-- **Git Setup**: Repository initialised at project root with `.gitignore`
-- **TypeScript**: Zero `tsc` errors on both backend and frontend
-- **Automated Testing**:
-  - Backend: Jest + Supertest — 10 tests covering GET/POST/DELETE, validation, isolation via `resetTransactions()`
-  - Frontend: Vitest + React Testing Library — 17 tests covering form, list, and `useTransactions` hook
-- **Code Quality**: Accessible form labels, empty states, error banners, `useMemo` for chart data, `useCallback` for stable callbacks, cancellable `useEffect`
-
-### 🔄 In Progress
-- **CI/CD Pipeline**: GitHub Actions workflow (Increment 3)
-- **Deployment**: Firebase Hosting + Functions (Increment 3)
+- **Both apps**: Full-stack CRUD, TypeScript throughout, layered architecture (api → hooks → components)
+- **Finance dashboard**: Transactions with income/expense filtering, charts (Recharts), category pills
+- **Hotel admin dashboard**: Bookings table with search, sorting, pagination, status updates, stats bar
+- **Automated Testing**: 27+ tests across both apps (Jest + Supertest backend, Vitest + RTL frontend)
+- **CI/CD**: GitHub Actions — 4 parallel test jobs (typecheck + tests), deploy job gated on all passing
+- **Firebase Deployment**:
+  - Finance dashboard → `finance-dashboard-e51e4` (Blaze, Firestore backend)
+  - Hotel dashboard → `hotel-admin-a5563` (Blaze, in-memory backend, Cloud Functions v2)
+  - Both deployed via `FIREBASE_TOKEN` secret in GitHub Actions
+  - Smoke tests assert JSON array response post-deploy
+- **CI/CD badges**: In both READMEs
 
 ### ❌ Not Started
-- **Category filtering** (TypeScript enums)
-- **Code review process** (pull request workflow)
-- **Architecture documentation**
-- **CI/CD status badges in README**
+- **Category filtering with TypeScript enums** (finance dashboard)
+- **Code review process** (pull request workflow documentation)
+- **Performance optimisation**
 
 ## Architecture
 
 ```
-apps/personal-finance-dashboard/
-├── backend/
-│   ├── src/
-│   │   ├── app.ts          # Express app + routes + types (imported by tests)
-│   │   ├── server.ts       # Entry point — calls app.listen() only
-│   │   └── __tests__/
-│   │       └── transactions.test.ts
-│   ├── tsconfig.json
-│   └── jest.config.ts
-└── frontend/
-    ├── src/
-    │   ├── api/
-    │   │   └── transactions.ts     # Raw HTTP calls
-    │   ├── hooks/
-    │   │   └── useTransactions.ts  # State + side effects
-    │   ├── __tests__/
-    │   │   ├── setup.ts
-    │   │   ├── TransactionForm.test.tsx
-    │   │   ├── TransactionList.test.tsx
-    │   │   └── useTransactions.test.tsx
-    │   ├── App.tsx
-    │   ├── TransactionForm.tsx
-    │   ├── TransactionList.tsx
-    │   ├── Charts.tsx
-    │   └── types.ts
-    ├── tsconfig.json
-    └── vite.config.ts
+apps/
+├── personal-finance-dashboard/
+│   ├── backend/src/
+│   │   ├── app.ts                  # Express routes
+│   │   ├── repository.ts           # TransactionRepository interface
+│   │   ├── InMemoryRepository.ts   # Tests + local dev
+│   │   ├── FirestoreRepository.ts  # Production
+│   │   ├── index.ts                # Firebase Functions entry point
+│   │   └── server.ts               # Local dev entry point
+│   └── frontend/src/
+│       ├── api/transactions.ts
+│       ├── hooks/useTransactions.ts
+│       └── components/
+└── hotel-admin-dashboard/
+    ├── backend/src/
+    │   ├── routes/app.ts
+    │   ├── repository/
+    │   │   ├── BookingRepository.ts
+    │   │   └── InMemoryRepository.ts
+    │   ├── index.ts                # Firebase Functions entry point
+    │   └── server.ts
+    └── frontend/src/
+        ├── api/bookings.ts
+        ├── hooks/useTableControls.ts
+        └── components/
 ```
 
-## Tech Stack
-- **Frontend**: React 19, Vite, TypeScript, axios, recharts, Vitest, React Testing Library
-- **Backend**: Node.js, Express 5, TypeScript, Jest, Supertest
-- **Next**: GitHub Actions (CI/CD), Firebase Hosting + Functions (deployment)
+## CI/CD Pipeline (.github/workflows/ci.yml)
 
-## Checklist Progress
-- [x] Basic CRUD operations
-- [x] React components (form, list, charts)
-- [x] Express API endpoints
-- [x] Git repository setup
-- [x] TypeScript implementation (frontend + backend)
-- [x] Automated testing (Jest + Vitest, 27 tests total)
-- [ ] CI/CD pipeline (GitHub Actions)
-- [ ] Cloud deployment (Firebase)
-- [ ] Code review process
-- [ ] Performance optimisation
-- [ ] Architecture documentation
+4 parallel test jobs → 1 deploy job (master push only):
+1. `test-backend` — finance backend Jest
+2. `test-frontend` — finance frontend typecheck + Vitest
+3. `test-hotel-backend` — hotel backend Jest
+4. `test-hotel-frontend` — hotel frontend typecheck + Vitest
+5. `deploy` — builds + deploys both apps + smoke tests
 
 ## Commands
 
 ```bash
-# Backend
+# Finance backend
 cd apps/personal-finance-dashboard/backend
-npm run dev          # ts-node + nodemon
-npm test             # Jest
-npm run test:coverage
+npm run dev && npm test
 
-# Frontend
+# Finance frontend
 cd apps/personal-finance-dashboard/frontend
-npm run dev          # Vite dev server
-npm test             # Vitest
-npm run test:coverage
-npm run typecheck    # tsc --noEmit
+npm run dev && npm test && npm run typecheck
+
+# Hotel backend
+cd apps/hotel-admin-dashboard/backend
+npm run dev && npm test
+
+# Hotel frontend
+cd apps/hotel-admin-dashboard/frontend
+npm run dev && npm test && npm run typecheck
 ```
 
 ## Firebase CLI (Windows)
-`firebase` is not added to PATH after `npm install -g firebase-tools` on Windows.
-Always use `npx` prefix:
+Always use `npx` prefix — `firebase` not in PATH after global install:
 
 ```powershell
 npx firebase login
 npx firebase projects:list
-npx firebase init
 npx firebase deploy
-npx firebase emulators:start
 ```
 
 ## Notes
-- Backend runs on port 3001
-- Frontend Vite proxy forwards `/transactions` → `localhost:3001` (no hardcoded URLs in source)
-- `type="date"` input replaced with `type="text"` + pattern — browser date pickers are untestable in jsdom and production apps use picker libraries (react-datepicker etc.)
-- happy-dom dropped in favour of jsdom@25 — React 19 changed event delegation to root container; happy-dom doesn't propagate events up to it
+- Finance backend: port 3001, Hotel backend: port 3002
+- Vite proxies `/transactions` → 3001, `/bookings` → 3002
+- Hotel Cloud Functions deploy as 2nd gen — hosting rewrites use `run.serviceId` not `function`
+- 2nd gen Cloud Functions require `allUsers` Cloud Functions Invoker IAM binding for public access
+- `type="date"` replaced with `type="text"` + pattern — jsdom can't interact with browser date pickers
+- jsdom@25 used (not happy-dom) — React 19 event delegation requires root container propagation
