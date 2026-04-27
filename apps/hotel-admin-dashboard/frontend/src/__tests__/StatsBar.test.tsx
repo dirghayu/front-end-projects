@@ -31,4 +31,10 @@ describe('StatsBar', () => {
     render(<StatsBar bookings={[]} />);
     expect(screen.getByText('0%')).toBeInTheDocument();
   });
+
+  it('shows occupancy rate based on checked-in ratio', () => {
+    render(<StatsBar bookings={BOOKINGS} />);
+    // 1 checked-in out of 4 bookings = 25%
+    expect(screen.getByText('25%')).toBeInTheDocument();
+  });
 });
