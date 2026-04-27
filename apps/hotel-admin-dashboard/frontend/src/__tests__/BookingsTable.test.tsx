@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
 import BookingsTable from '../components/BookingsTable';
-import { Booking } from '../types';
+import type { Booking } from '../types';
 
 const onStatusChange = vi.fn();
 const onDelete = vi.fn();

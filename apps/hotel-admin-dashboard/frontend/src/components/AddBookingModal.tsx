@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { CreateBookingBody, BookingStatus } from '../types';
+import type { CreateBookingBody } from '../types';
 
 interface AddBookingModalProps {
   onAdd: (body: CreateBookingBody) => void;

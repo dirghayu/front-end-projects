@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import StatsBar from '../components/StatsBar';
-import { Booking } from '../types';
+import type { Booking } from '../types';
 
 const BOOKINGS: Booking[] = [
   { id: '1', guestName: 'Alice', room: '101', checkIn: '2026-04-20', checkOut: '2026-04-23', status: 'checked-in', amount: 450 },
