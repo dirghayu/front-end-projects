@@ -9,11 +9,11 @@
     "rewrites": [
       {
         "source": "/bookings",
-        "function": "api"
+        "run": { "serviceId": "api", "region": "us-central1" }
       },
       {
         "source": "/bookings/**",
-        "function": "api"
+        "run": { "serviceId": "api", "region": "us-central1" }
       },
       {
         "source": "**",
