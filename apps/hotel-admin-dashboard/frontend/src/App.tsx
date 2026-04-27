@@ -33,15 +33,46 @@ function App() {
     <div className="app">
       <header className="app-header">
         <div className="header-content">
-          <div>
-            <h1>Hotel Admin</h1>
-            <p className="header-sub">Booking Management</p>
+          <div className="logo-mark">
+            <div className="logo-icon">🏨</div>
+            <div>
+              <h1>Hotel Admin</h1>
+              <p className="header-sub">Management Portal</p>
+            </div>
           </div>
-          <button className="btn-primary" onClick={() => setShowModal(true)}>+ Add Booking</button>
+
+          <nav className="nav-section">
+            <p className="nav-label">Main</p>
+            <div className="nav-item active">
+              <span className="nav-item-icon">📋</span> Bookings
+            </div>
+            <div className="nav-item">
+              <span className="nav-item-icon">🛏️</span> Rooms
+            </div>
+            <div className="nav-item">
+              <span className="nav-item-icon">👥</span> Guests
+            </div>
+            <p className="nav-label" style={{ marginTop: '20px' }}>Reports</p>
+            <div className="nav-item">
+              <span className="nav-item-icon">📊</span> Analytics
+            </div>
+            <div className="nav-item">
+              <span className="nav-item-icon">💰</span> Revenue
+            </div>
+          </nav>
+
+          <div className="sidebar-footer">
+            <button className="btn-primary" onClick={() => setShowModal(true)}>
+              + New Booking
+            </button>
+          </div>
         </div>
       </header>
 
       <main className="main-content">
+        <p className="page-title">Bookings</p>
+        <p className="page-subtitle">Manage and track all hotel reservations</p>
+
         {error && (
           <div className="error-banner" role="alert">
             {error}
@@ -63,7 +94,7 @@ function App() {
               <input
                 className="search-input"
                 type="search"
-                placeholder="Search by guest or room..."
+                placeholder="Search guest or room..."
                 defaultValue={search}
                 onChange={onSearchChange}
                 aria-label="Search bookings"

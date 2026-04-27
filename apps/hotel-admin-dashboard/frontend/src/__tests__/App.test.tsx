@@ -32,6 +32,6 @@ describe('App', () => {
 
   it('shows Add Booking button', async () => {
     render(<App />);
-    await waitFor(() => expect(screen.getByRole('button', { name: /add booking/i })).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole('button', { name: /new booking/i })).toBeInTheDocument());
   });
 });
